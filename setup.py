@@ -20,8 +20,11 @@ TEST_REQUIRES = [
     'bandit',
     'flake8',
     'mypy',
-    'pylint==2.6.2',
+    'pylint',
     'pytest-cov',
+    'pytest-flake8',
+    'pytest-mypy',
+    'pytest-pylint',
     'pytest-xdist'
 ]
 
