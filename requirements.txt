@@ -1,0 +1,10 @@
+numpy
+opencv-python
+torch >= 1.6
+matplotlib
+pycocotools
+tqdm
+tb-nightly
+future
+Pillow
+thop
