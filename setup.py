@@ -4,7 +4,7 @@
 import setuptools
 
 INSTALL_REQUIRES = [
-    'numpy',
+    'numpy >= 1.2',
     'opencv-python',
     'torch>=1.6',
     'matplotlib',

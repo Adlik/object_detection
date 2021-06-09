@@ -4,7 +4,24 @@ jobs = 0
 [MESSAGES CONTROL]
 disable = missing-class-docstring,
           missing-function-docstring,
+<<<<<<< 9da197bae6158b951d7a86766d9ad89d0319c43a
           missing-module-docstring
+=======
+          missing-module-docstring,
+          locally-disabled,
+          too-many-locals,
+          too-many-statements,
+          too-many-arguments,
+          too-many-instance-attributes,
+          too-many-branches,
+          logging-fstring-interpolation,
+          logging-not-lazy,
+          invalid-name,
+          duplicate-code,
+          import-error,
+          no-name-in-module
+
+>>>>>>> Fix review
 
 [FORMAT]
 max-line-length = 120
