@@ -1,5 +1,8 @@
 # Copyright 2019 ZTE corporation. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+# pylint: disable=C0103, R0914, W1203, E0401, E0611, W0601
+
+""" Train"""
 
 import os
 import time
@@ -27,7 +30,6 @@ from utils.prune_utils import parse_module_index, gather_bn_weights, bn_l1_regul
 
 logger = logging.getLogger(__name__)
 
-# pylint: disable=C0103, R0914, W1203
 mixed_precision = True
 try:
     from apex import amp
@@ -42,7 +44,52 @@ best = weights_dir + 'best.pt'
 results_file = 'results.txt'
 
 
-def main(opt, writer):
+def parse():
+    """Parser for command-line options, arguments and sub-commands"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--epochs', type=int, default=273, help='500200 batches at bs 16, 117263 images = 273 epochs')
+    parser.add_argument('--batch_size', type=int, default=16, help='effective bs = batch_size * ccumulate = 16*4 = 64')
+    parser.add_argument('--accumulate', type=int, default=4, help='batches to accumulate before optimizing')
+    parser.add_argument('--cfg', type=str, default='cfg/yolov3.cfg', help='cfg file path')
+    parser.add_argument('--teacher_cfg', type=str, default='', help='teacher model cfg file for knowledge distillation')
+    parser.add_argument('--data', type=str, default='data/coco2017.yaml', help='*.data file path')
+    parser.add_argument('--hyp', type=str, default='data/hyp.yaml', help='the file of hyp path')
+    parser.add_argument('--multi-scale', action='store_true', help='adjust (67% - 150%) img_size every 10 batches')
+    parser.add_argument('--img_size', type=int, default=608, help='inference size (pixels)')
+    parser.add_argument('--rect', action='store_true', help='rectangular training')
+    parser.add_argument('--resume', action='store_true', help='resume training from last.pt')
+    parser.add_argument('--nosave', action='store_true', help='only save final checkpoint')
+    parser.add_argument('--notest', action='store_true', help='only test final epoch')
+    parser.add_argument('--evolve', action='store_true', help='evolve hyperparameters')
+    parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
+    parser.add_argument('--weights', type=str, default='', help='initial weights')
+    parser.add_argument('--teacher_weights', type=str, default='', help='teacher model weights')
+    parser.add_argument('--arc', type=str, default='defaultpw', help='yolo architecture, defaultpw, uCE, uBCE')
+    parser.add_argument('--name', default='', help='renames results.txt to results_name.txt if supplied')
+    parser.add_argument('--device', default='0,1,2,3,4,5,6,7', help='device id (i.e. 0 or 0,1) or cpu')
+    parser.add_argument('--adam', action='store_true', help='use adam optimizer')
+    parser.add_argument('--sparsity_training', '-st', dest='st', action='store_true',
+                        help='train with channel sparsity regularization')
+    parser.add_argument('--penalty_factor', '-pf', type=float, default=0.0001, help='scale sparse rate')
+    parser.add_argument('--prune', type=int, default=0, help='0:nomal prune 1:other prune ')
+    parser.add_argument("--local_rank", type=int, default=-1, help="Distributed training - Local rank")
+    parser.add_argument("--seed", type=int, default=56, help="Random seed")
+    args = parser.parse_args()
+
+    return args
+
+
+def main():
+    """ Train and test
+
+    :param opt: args
+    :param writer: tensorboard
+    :return:
+    """
+
+    global opt
+    opt = parse()
+
     arc = opt.arc
     cfg = opt.cfg
     teacher_cfg = opt.teacher_cfg
@@ -54,6 +101,19 @@ def main(opt, writer):
     teacher_weights = opt.teacher_weights
     multi_scale = opt.multi_scale
     sparsity_training = opt.st
+
+    opt.weights = last if opt.resume else opt.weights
+
+    # Initial logging
+    logging.basicConfig(
+        format="%(message)s",
+        level=logging.INFO if opt.local_rank in [-1, 0] else logging.WARN)
+
+    # Train
+    logger.info(opt)
+    if opt.local_rank in [-1, 0]:
+        logger.info('Start Tensorboard with "tensorboard --logdir=runs", view at http://localhost:6006/')
+        writer = SummaryWriter()
 
     # Hyperparameters
     with open(opt.hyp) as f_hyp:
@@ -196,8 +256,7 @@ def main(opt, writer):
     # 'P', 'R', 'mAP', 'F1', 'val GIoU', 'val Objectness', 'val Classification'
     results = (0, 0, 0, 0, 0, 0, 0)
     start_train_time = time.time()
-    logger.info(f'Image sizes {img_size}\n'
-                f'Starting training for {epochs} epochs...')
+    logger.info('Image sizes %d \n Starting training for %d epochs...', img_size, epochs)
 
     for epoch in range(start_epoch, epochs):  # epoch ------------------------------------------------------------------
         model.train()
@@ -205,7 +264,8 @@ def main(opt, writer):
         mean_losses = torch.zeros(4).to(device)
         mean_soft_target = torch.zeros(1).to(device)
         pbar = enumerate(dataloader)
-        logger.info(('\n' + '%10s' * 8), 'Epoch', 'gpu_mem', 'box', 'obj', 'cls', 'total', 'targets', 'img_size')
+        logger.info(('\n %10s %10s %10s %10s %10s %10s %10s %10s'), 'Epoch', 'gpu_mem', 'box', 'obj', 'cls', 'total',
+                    'targets', 'img_size')
         if opt.local_rank in [-1, 0]:
             pbar = tqdm(pbar, total=num_batch_size)
         optimizer.zero_grad()
@@ -347,48 +407,5 @@ def main(opt, writer):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--epochs', type=int, default=273, help='500200 batches at bs 16, 117263 images = 273 epochs')
-    parser.add_argument('--batch_size', type=int, default=16, help='effective bs = batch_size * ccumulate = 16*4 = 64')
-    parser.add_argument('--accumulate', type=int, default=4, help='batches to accumulate before optimizing')
-    parser.add_argument('--cfg', type=str, default='cfg/yolov3.cfg', help='cfg file path')
-    parser.add_argument('--teacher_cfg', type=str, default='', help='teacher model cfg file for knowledge distillation')
-    parser.add_argument('--data', type=str, default='data/coco2017.yaml', help='*.data file path')
-    parser.add_argument('--hyp', type=str, default='data/hyp.yaml', help='the file of hyp path')
-    parser.add_argument('--multi-scale', action='store_true', help='adjust (67% - 150%) img_size every 10 batches')
-    parser.add_argument('--img_size', type=int, default=608, help='inference size (pixels)')
-    parser.add_argument('--rect', action='store_true', help='rectangular training')
-    parser.add_argument('--resume', action='store_true', help='resume training from last.pt')
-    parser.add_argument('--nosave', action='store_true', help='only save final checkpoint')
-    parser.add_argument('--notest', action='store_true', help='only test final epoch')
-    parser.add_argument('--evolve', action='store_true', help='evolve hyperparameters')
-    parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
-    parser.add_argument('--weights', type=str, default='', help='initial weights')
-    parser.add_argument('--teacher_weights', type=str, default='', help='teacher model weights')
-    parser.add_argument('--arc', type=str, default='defaultpw', help='yolo architecture, defaultpw, uCE, uBCE')
-    parser.add_argument('--name', default='', help='renames results.txt to results_name.txt if supplied')
-    parser.add_argument('--device', default='0,1,2,3,4,5,6,7', help='device id (i.e. 0 or 0,1) or cpu')
-    parser.add_argument('--adam', action='store_true', help='use adam optimizer')
-    parser.add_argument('--sparsity_training', '-st', dest='st', action='store_true',
-                        help='train with channel sparsity regularization')
-    parser.add_argument('--penalty_factor', '-pf', type=float, default=0.0001, help='scale sparse rate')
-    parser.add_argument('--prune', type=int, default=0, help='0:nomal prune 1:other prune ')
-    parser.add_argument("--local_rank", type=int, default=-1, help="Distributed training - Local rank")
-    parser.add_argument("--seed", type=int, default=56, help="Random seed")
-    args = parser.parse_args()
 
-    args.weights = last if args.resume else args.weights
-
-    # Initial logging
-    logging.basicConfig(
-        format="%(message)s",
-        level=logging.INFO if args.local_rank in [-1, 0] else logging.WARN)
-
-    # Train
-    logger.info(args)
-    tb_writer = None  # init loggers
-    if args.local_rank in [-1, 0]:
-        logger.info('Start Tensorboard with "tensorboard --logdir=runs", view at http://localhost:6006/')
-        tb_writer = SummaryWriter()
-
-    main(args, tb_writer)
+    main()

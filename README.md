@@ -1,11 +1,7 @@
 # Object Detection
 
-<<<<<<< 9da197bae6158b951d7a86766d9ad89d0319c43a
 [![Build Status](https://dev.azure.com/Adlik/GitHub/_apis/build/status/Adlik.object_detection?branchName=main)](https://dev.azure.com/Adlik/GitHub/_build/latest?definitionId=3&branchName=main)
 [![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/33433)
-=======
-[![Build Status](https://dev.azure.com/Adlik/GitHub/_apis/build/status/Adlik.model_optimizer?branchName=master)](https://dev.azure.com/Adlik/GitHub/_build/latest?definitionId=2&branchName=master)
-[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/23640)
 
 ## 1. Introduction
 

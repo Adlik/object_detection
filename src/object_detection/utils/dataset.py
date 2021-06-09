@@ -1,6 +1,8 @@
 # Copyright 2019 ZTE corporation. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""Custom dateset"""
+
 import glob
 import logging
 import math
@@ -20,8 +22,7 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 from .utils import xyxy2xywh, plot_images
 
-# pylint: disable=W0212, W0104
-
+# pylint: disable=W0212, W0104, C0103
 help_url = 'https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data'
 img_formats = ['bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff', 'dng']  # acceptable image suffixes
 logger = logging.getLogger(__name__)
@@ -252,6 +253,7 @@ class LoadImagesAndLabels(Dataset):
 
     @staticmethod
     def collate_fn(batch):
+        """collate functions"""
         img, label, path, shapes = zip(*batch)  # transposed
         for i, lab in enumerate(label):
             lab[:, 0] = i                         # add target image index for build_targets()
@@ -313,7 +315,7 @@ class LoadImagesAndLabels(Dataset):
         img_label_dict['hash'] = _get_hash(self.label_files + self.img_files)
         img_label_dict['results'] = [num_found, num_missing, num_empty, num_corrupted, num_total + 1]
         torch.save(img_label_dict, path)     # save for next time
-        logging.info(f"New cache created: {path}")
+        logging.info("New cache created: %s", path)
         return img_label_dict
 
 

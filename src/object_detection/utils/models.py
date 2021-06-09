@@ -1,6 +1,8 @@
 # Copyright 2019 ZTE corporation. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""Constructed model by cfg file"""
+
 import os
 import argparse
 import logging
@@ -19,8 +21,8 @@ ONNX_EXPORT = False
 
 
 class Model(nn.Module):
-    """Create the YOLOv4 model from cfg file
-    """
+    """Create the YOLOv4 model from cfg file"""
+
     def __init__(self, cfg, img_size=608, arc='default'):
         super().__init__()
         # Converts the cfg file that defines the model to a list of elements as dictionaries
@@ -42,6 +44,7 @@ class Model(nn.Module):
         model_info(self, verbose=False, img_size=self.img_size)
 
     def forward(self, inputs):
+        """forward"""
         img_size = inputs.shape[-2:]
         layer_outputs = []
         output = []
@@ -266,6 +269,7 @@ class Mish(nn.Module):
     """
     @classmethod
     def forward(cls, inputs):
+        """forward"""
         return inputs.mul(torch.tanh(F.softplus(inputs)))
 
 
@@ -296,6 +300,7 @@ class YOLOLayer(nn.Module):
             self.create_grids(img_size, (num_x, num_y))
 
     def forward(self, pred, img_size):
+        """forward"""
         if ONNX_EXPORT:
             batch_size = 1
         else:
@@ -467,6 +472,7 @@ if __name__ == '__main__':
     else:
         device = torch.device("cpu")
 
+    # pylint: disable=C0103
     # Create model
     print(device)
     model = Model(opt.cfg).to(device)
