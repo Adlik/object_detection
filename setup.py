@@ -6,7 +6,7 @@ import setuptools
 INSTALL_REQUIRES = [
     'numpy',
     'opencv-python',
-    'torch >= 1.6',
+    'torch>=1.6',
     'matplotlib',
     'pycocotools',
     'tqdm',
@@ -19,7 +19,7 @@ INSTALL_REQUIRES = [
 TEST_REQUIRES = [
     'bandit',
     'flake8',
-    'mypy',
+    'mypy==0.812',
     'pylint',
     'pytest-cov',
     'pytest-flake8',
