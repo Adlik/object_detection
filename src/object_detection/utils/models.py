@@ -14,7 +14,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_utils import fuse_conv_and_bn, model_info
 
-
 logger = logging.getLogger(__name__)
 
 ONNX_EXPORT = False
