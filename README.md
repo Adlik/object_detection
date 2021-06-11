@@ -125,4 +125,3 @@ All the results are tested on val2017 dataset.
 | Sparsity YOLOv4        | 608  |  0.647  |    0.419    | 128.7  | 246 M  |    53     |
 | Regular prune   (30%)  | 608  |  0.015  |      -      |  92.8  |  136M  |    63     |
 | Knowledge distillation | 608  |  0.614  |    0.360    |  92.8  |  136M  |    63     |
->>>>>>> Fix review
