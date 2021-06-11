@@ -1,10 +1,12 @@
 # Copyright 2019 ZTE corporation. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""Setup"""
+
 import setuptools
 
 INSTALL_REQUIRES = [
-    'numpy',
+    'numpy >= 1.2',
     'opencv-python',
     'torch>=1.6',
     'matplotlib',
@@ -13,7 +15,8 @@ INSTALL_REQUIRES = [
     'tb-nightly',
     'future',
     'Pillow',
-    'thop'
+    'thop',
+    'terminaltables'
 ]
 
 TEST_REQUIRES = [
