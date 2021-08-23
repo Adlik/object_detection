@@ -27,7 +27,7 @@ help_url = 'https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data'
 img_formats = ['bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff', 'dng']  # acceptable image suffixes
 logger = logging.getLogger(__name__)
 
-
+# pylint: disable=C0206
 # Get orientation exif tag
 for orientation in ExifTags.TAGS:
     if ExifTags.TAGS[orientation] == 'Orientation':

@@ -13,9 +13,9 @@ import argparse
 from test import test
 import yaml
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
-import torch.optim as optim
+from torch import optim
 import torch.distributed as dist
 
 from torch.utils.tensorboard import SummaryWriter

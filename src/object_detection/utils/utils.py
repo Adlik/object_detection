@@ -13,7 +13,7 @@ from cv2 import cv2
 from PIL import Image
 import numpy as np
 import torch
-import torch.backends.cudnn as cudnn
+from torch.backends import cudnn
 from loss import bbox_iou
 
 

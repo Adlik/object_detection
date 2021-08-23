@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 
 import torch
-import torch.nn as nn
+from torch import nn
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 from utils.models import Model, load_darknet_weights

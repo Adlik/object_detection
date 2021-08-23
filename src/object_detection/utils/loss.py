@@ -7,7 +7,7 @@ Provides utilities to loss
 
 import math
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 def compute_loss(pred, targets, model):

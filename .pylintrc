@@ -10,7 +10,8 @@ disable = too-many-locals,
           too-many-instance-attributes,
           too-many-branches,
           import-error,
-          no-name-in-module
+          no-name-in-module,
+          unspecified-encoding
 
 [FORMAT]
 max-line-length = 120
