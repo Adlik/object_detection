@@ -1,0 +1,33 @@
+# Hyperparameters for COCO training from scratch
+# See tutorials for hyperparameter evolution https://github.com/ultralytics/yolov5#tutorials
+# Hyperparameters (j-series, 50.5 mAP yolov3-320) evolved by @ktian08 https://github.com/ultralytics/yolov3/issues/310
+
+
+lr0: 0.002324     # initial learning rate (SGD=1E-2, Adam=1E-3)
+lrf: -4  # final OneCycleLR learning rate (lr0 * lrf)
+momentum: 0.97    # SGD momentum/Adam beta1
+weight_decay: 0.0004569  # optimizer weight decay 5e-4
+warmup_epochs: 3.0    # warmup epochs (fractions ok)
+warmup_momentum: 0.8  # warmup initial momentum
+warmup_bias_lr: 0.1   # warmup initial bias lr
+box: 1.582     # box loss gain
+cls: 27.76      # cls loss gain
+cls_pw: 1.446   # cls BCELoss positive_weight
+obj: 21.35      # obj loss gain (scale with pixels)
+obj_pw: 3.941   # obj BCELoss positive_weight
+iou_threshold: 0.2635  # IoU training threshold
+anchor_t: 4.0  # anchor-multiple threshold
+# anchors: 3   # anchors per output layer (0 to ignore)
+fl_gamma: 0.5  # focal loss gamma (efficientDet default gamma=1.5)
+hsv_h: 0.10    # image HSV-Hue augmentation (fraction)
+hsv_s: 0.5703  # image HSV-Saturation augmentation (fraction)
+hsv_v: 0.3174  # image HSV-Value augmentation (fraction)
+degrees: 1.113    # image rotation (+/- deg)
+translate: 0.06797    # image translation (+/- fraction)
+scale: 0.1059  # image scale (+/- gain)
+shear: 0.5768  # image shear (+/- deg)
+perspective: 0.0  # image perspective (+/- fraction), range 0-0.001
+flipud: 0.0  # image flip up-down (probability)
+fliplr: 0.5  # image flip left-right (probability)
+mosaic: 1.0  # image mosaic (probability)
+mixup: 0.0  # image mixup (probability)
